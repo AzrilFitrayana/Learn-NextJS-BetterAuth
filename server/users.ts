@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 
+// email and password
 export const signIn = async (email: string, password: string) => {
   try {
     await auth.api.signInEmail({
@@ -26,12 +27,25 @@ export const signIn = async (email: string, password: string) => {
   }
 };
 
-export const signUp = async () => {
-  await auth.api.signUpEmail({
-    body: {
-      email: "lutung@email.com",
-      password: "password",
-      name: "Lutung",
-    },
-  });
+export const signUp = async (email: string, password: string, name: string) => {
+  try {
+    await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Sign up success",
+    };
+  } catch (error) {
+    const e = error as Error;
+    return {
+      success: false,
+      message: e.message || "Something went wrong",
+    };
+  }
 };
