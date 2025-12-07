@@ -3,6 +3,10 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/database"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
 import { schema } from "@/database/schema";
+import { Resend } from "resend";
+import ForgotPasswordEmail from "@/components/emails/reset-password";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -11,6 +15,35 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      // console.log("Attempting to send reset password email to:", user.email);
+      // console.log("Reset URL:", url);
+      // if (!process.env.RESEND_API_KEY) {
+      //   console.error("RESEND_API_KEY is missing");
+      //   return;
+      // }
+      try {
+        const { data, error } = await resend.emails.send({
+          from: "Acme <onboarding@resend.dev>",
+          to: user.email,
+          subject: "Reset Password",
+          react: ForgotPasswordEmail({
+            userEmail: user.email,
+            resetUrl: url,
+            username: user.name,
+          }), //dari component/emails/forgot-password.tsx
+        });
+
+        if (error) {
+          console.error("Resend API Error:", error);
+        } else {
+          console.log("Email sent successfully:", data);
+        }
+      } catch (error) {
+        console.error("Unexpected error sending email:", error);
+      }
+    },
   },
   socialProviders: {
     google: {
