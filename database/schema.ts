@@ -57,3 +57,5 @@ export const verification = mysqlTable("verification", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
+
+export const schema = { user, session, account, verification };
