@@ -49,6 +49,13 @@ export const signInWithGoogle = async () => {
   });
 };
 
+// gihub
+const signInWithGitHub = async () => {
+  const data = await authClient.signIn.social({
+    provider: "github",
+    callbackURL: "/dashboard",
+  })
+}
 
 export function LoginForm({
   className,
@@ -93,7 +100,7 @@ export function LoginForm({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FieldGroup>
                 <Field>
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" onClick={signInWithGitHub}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
