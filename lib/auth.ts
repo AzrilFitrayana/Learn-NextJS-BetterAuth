@@ -5,6 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { schema } from "@/database/schema";
 import { Resend } from "resend";
 import ForgotPasswordEmail from "@/components/emails/reset-password";
+import VerifyEmail from "@/components/emails/verify-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -43,6 +44,20 @@ export const auth = betterAuth({
       } catch (error) {
         console.error("Unexpected error sending email:", error);
       }
+    },
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: user.email,
+        subject: "Verify Email Address",
+        react: VerifyEmail({
+          verifyUrl: url,
+          username: user.name,
+        }), //dari component/emails/verify-email.tsx
+      });
     },
   },
   socialProviders: {
